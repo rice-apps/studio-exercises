@@ -14,8 +14,7 @@ type OutOfStockError struct {
 // Error satisfies the error interface.
 // Message format: "out of stock: need %d of %s but have %d"
 func (e *OutOfStockError) Error() string {
-	// TODO: Implement Error() string method
-	return ""
+	return fmt.Sprintf("out of stock: need %d of %s but have %d", e.Needed, e.Item, e.Available)
 }
 
 // MenuItem interface defines anything that can be added to an order.
@@ -32,13 +31,23 @@ type Drink struct {
 	MilkOunces int
 }
 
-// TODO: Implement MenuItem interface for Drink using pointer receivers (*Drink)
-
 func (d *Drink) Price() float64 {
-	return 0.0
+	return d.BasePrice
 }
 
 func (d *Drink) Prepare(inventory map[string]int) error {
+	if d.MilkType == "None" {
+		return nil
+	}
+	avail := inventory[d.MilkType]
+	if avail < d.MilkOunces {
+		return &OutOfStockError{
+			Item:      d.MilkType,
+			Needed:    d.MilkOunces,
+			Available: avail,
+		}
+	}
+	inventory[d.MilkType] -= d.MilkOunces
 	return nil
 }
 
@@ -48,13 +57,20 @@ type Pastry struct {
 	BasePrice float64
 }
 
-// TODO: Implement MenuItem interface for Pastry using value receivers (Pastry)
-
 func (p Pastry) Price() float64 {
-	return 0.0
+	return p.BasePrice
 }
 
 func (p Pastry) Prepare(inventory map[string]int) error {
+	avail := inventory[p.Name]
+	if avail < 1 {
+		return &OutOfStockError{
+			Item:      p.Name,
+			Needed:    1,
+			Available: avail,
+		}
+	}
+	inventory[p.Name] -= 1
 	return nil
 }
 
@@ -69,8 +85,14 @@ type Order struct {
 // - If any Prepare() fails, abort and immediately return (0.0, err).
 // - On success, return (total, nil).
 func (o Order) Fulfill(inventory map[string]int) (float64, error) {
-	// TODO: Implement Fulfill
-	return 0.0, nil
+	var total float64
+	for _, item := range o.Items {
+		total += item.Price()
+		if err := item.Prepare(inventory); err != nil {
+			return 0.0, err
+		}
+	}
+	return total, nil
 }
 
 func main() {

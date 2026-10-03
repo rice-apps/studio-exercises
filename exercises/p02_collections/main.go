@@ -2,34 +2,59 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 // CalculateWeeklyRevenue accepts a fixed-size array of 7 daily revenue totals.
 // Returns (totalRevenue, averageDailyRevenue).
 func CalculateWeeklyRevenue(sales [7]float64) (float64, float64) {
-	// TODO: Implement using a range loop over the array
-	return 0.0, 0.0
+	var total float64
+	for _, daily := range sales {
+		total += daily
+	}
+	return total, total / 7.0
 }
 
 // FilterOnlineOrders filters a slice of raw order logs.
 // Returns a new slice containing only the logs that begin with "ONLINE:".
 func FilterOnlineOrders(logs []string) []string {
-	// TODO: Implement using strings.HasPrefix and append()
-	return nil
+	var onlineOrders []string
+	for _, log := range logs {
+		if strings.HasPrefix(log, "ONLINE:") {
+			onlineOrders = append(onlineOrders, log)
+		}
+	}
+	return onlineOrders
 }
 
 // ParseModifiers extracts modifiers from a comma-separated ticket string.
 // Example: "London Fog, extra foam,  oat milk "
 // Returns: ["extra foam", "oat milk"] (The drink name itself is discarded).
 func ParseModifiers(ticket string) []string {
-	// TODO: Implement using strings.Split and strings.TrimSpace
-	return nil
+	parts := strings.Split(ticket, ",")
+	if len(parts) <= 1 {
+		return []string{}
+	}
+	var mods []string
+	for _, part := range parts[1:] {
+		trimmed := strings.TrimSpace(part)
+		if trimmed != "" {
+			mods = append(mods, trimmed)
+		}
+	}
+	if mods == nil {
+		return []string{}
+	}
+	return mods
 }
 
 // TallyDrinks creates a frequency map of drink orders.
 func TallyDrinks(drinks []string) map[string]int {
-	// TODO: Implement using make(map[string]int) and a range loop
-	return nil
+	tally := make(map[string]int)
+	for _, drink := range drinks {
+		tally[drink]++
+	}
+	return tally
 }
 
 func main() {

@@ -13,16 +13,21 @@ const (
 // GreetCustomer returns a formatted greeting string for the customer.
 // Output format: "Welcome to Chaus, <name>!"
 func GreetCustomer(name string) string {
-	// TODO: Implement this function using fmt.Sprintf
-	return ""
+	return fmt.Sprintf("Welcome to Chaus, %s!", name)
 }
 
 // CalculateDrinkPrice calculates the total price of a drink based on modifiers.
 // Formula: basePrice + (extraShots * ShotPrice) + (AltMilkPrice if altMilk else 0.0)
 // If basePrice <= 0, return 0.0.
 func CalculateDrinkPrice(basePrice float64, extraShots int, altMilk bool) float64 {
-	// TODO: Implement this function using variables, constants, and if/else logic
-	return 0.0
+	if basePrice <= 0 {
+		return 0.0
+	}
+	total := basePrice + (float64(extraShots) * ShotPrice)
+	if altMilk {
+		total += AltMilkPrice
+	}
+	return total
 }
 
 // ApplyDiscount applies a discount code to the total using a switch statement.
@@ -33,8 +38,16 @@ func CalculateDrinkPrice(basePrice float64, extraShots int, altMilk bool) float6
 // - "Faculty": 5% off (multiply by 0.95), true
 // - Default: no change, false
 func ApplyDiscount(total float64, discountType string) (float64, bool) {
-	// TODO: Implement this function using a switch statement
-	return 0.0, false
+	switch discountType {
+	case "BYOM":
+		return total - 0.25, true
+	case "Student":
+		return total * 0.90, true
+	case "Faculty":
+		return total * 0.95, true
+	default:
+		return total, false
+	}
 }
 
 // ValidatePromoCode checks if a Chaus discount code is valid.
@@ -43,8 +56,20 @@ func ApplyDiscount(total float64, discountType string) (float64, bool) {
 // 2. Contain at least one numeric digit ('0' through '9').
 // 3. Contain at least one uppercase letter ('A' through 'Z').
 func ValidatePromoCode(code string) bool {
-	// TODO: Implement using len(), a for loop, and byte comparisons
-	return false
+	if len(code) < 5 || len(code) > 10 {
+		return false
+	}
+	hasDigit := false
+	hasUpper := false
+	for i := 0; i < len(code); i++ {
+		if code[i] >= '0' && code[i] <= '9' {
+			hasDigit = true
+		}
+		if code[i] >= 'A' && code[i] <= 'Z' {
+			hasUpper = true
+		}
+	}
+	return hasDigit && hasUpper
 }
 
 func main() {

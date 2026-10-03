@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"math"
 	"testing"
 )
@@ -50,5 +51,31 @@ func TestOrder_Fulfill_Success(t *testing.T) {
 // Note: You may need to add imports at the top of this file!
 
 func TestOrder_OutOfStock(t *testing.T) {
-	t.Fatal("TODO: Implement TestOrder_OutOfStock")
+	inv := map[string]int{
+		"Oat Milk": 5,
+	}
+
+	smoothie := &Drink{Name: "Mango Peach Smoothie", BasePrice: 5.00, MilkType: "Oat Milk", MilkOunces: 12}
+	o := Order{
+		TicketID: "124",
+		Items:    []MenuItem{smoothie},
+	}
+
+	total, err := o.Fulfill(inv)
+	if err == nil {
+		t.Fatal("expected an error, but got nil")
+	}
+
+	if total != 0.0 {
+		t.Errorf("expected total to be 0.0 on error, got %.2f", total)
+	}
+
+	var outOfStockErr *OutOfStockError
+	if !errors.As(err, &outOfStockErr) {
+		t.Fatalf("expected error of type *OutOfStockError, got %T", err)
+	}
+
+	if outOfStockErr.Item != "Oat Milk" || outOfStockErr.Needed != 12 || outOfStockErr.Available != 5 {
+		t.Errorf("unexpected error fields: %+v", outOfStockErr)
+	}
 }
