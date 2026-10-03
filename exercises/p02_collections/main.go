@@ -23,6 +23,7 @@ func FilterOnlineOrders(logs []string) []string {
 // Returns: ["extra foam", "oat milk"] (The drink name itself is discarded).
 func ParseModifiers(ticket string) []string {
 	// TODO: Implement using strings.Split and strings.TrimSpace
+	// hi
 	return nil
 }
 
